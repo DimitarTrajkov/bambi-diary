@@ -19,7 +19,7 @@ const db = getFirestore(app);
 // --- APP SETTINGS & PASSWORDS ---
 const PASSWORDS = {
     "Dimitar": "dimitar123", // Change these!
-    "Verche": "verche123"
+    "Verce": "verce123"
 };
 
 let currentUser = "";
@@ -109,12 +109,12 @@ async function initializeAppState() {
         snapshot.forEach(doc => allEntries.push(doc.data()));
 
         let dimitarScore = 0;
-        let vercheScore = 0;
+        let verceScore = 0;
         let hasAnsweredThisWeek = false;
 
         allEntries.forEach(entry => {
             if (entry.author === "Dimitar") dimitarScore += (entry.pointsEarned || 0);
-            if (entry.author === "Verche") vercheScore += (entry.pointsEarned || 0);
+            if (entry.author === "verce") verceScore += (entry.pointsEarned || 0);
             
             if (entry.author === currentUser && entry.week === currentWeek && entry.year === new Date().getFullYear()) {
                 hasAnsweredThisWeek = true;
@@ -122,7 +122,7 @@ async function initializeAppState() {
         });
 
         document.getElementById('score-dimitar').innerText = dimitarScore;
-        document.getElementById('score-verche').innerText = vercheScore;
+        document.getElementById('score-verce').innerText = verceScore;
 
         if (hasAnsweredThisWeek) {
             document.getElementById('form-container').classList.add('hidden');
