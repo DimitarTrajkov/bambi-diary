@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Our Diary</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { -webkit-tap-highlight-color: transparent; }
+        ::-webkit-scrollbar { display: none; } /* Hides scrollbar for native app feel */
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans text-gray-900 antialiased selection:bg-rose-200">
+
+    <div class="w-full max-w-md mx-auto min-h-screen bg-white shadow-xl overflow-x-hidden relative flex flex-col">
+
+        <div id="login-screen" class="flex-1 flex flex-col justify-center px-8 py-12 fade-in">
+            <h1 class="text-3xl font-semibold tracking-tight text-center text-gray-900 mb-8">Sign In</h1>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5">Who are you?</label>
+                    <select id="login-user" class="w-full bg-gray-50 border border-gray-200 p-4 rounded-xl outline-none focus:ring-2 focus:ring-rose-500/50 text-base font-medium appearance-none">
+                        <option value="Dimitar">Dimitar</option>
+                        <option value="Verce">Verce</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5">Password</label>
+                    <input type="password" id="login-password" class="w-full bg-gray-50 border border-gray-200 p-4 rounded-xl outline-none focus:ring-2 focus:ring-rose-500/50 text-base font-medium">
+                </div>
+            </div>
+            
+            <button id="login-btn" class="w-full bg-gray-900 text-white font-medium text-base py-4 rounded-xl mt-8 active:scale-[0.98] transition-transform">
+                Enter Diary
+            </button>
+            <p id="login-error" class="text-rose-500 text-sm font-medium text-center mt-4 hidden">Incorrect password.</p>
+        </div>
+
+        <div id="main-app" class="flex-1 flex flex-col hidden fade-in">
+            
+            <div class="sticky top-0 z-10 bg-white/90 backdrop-blur-md border-b border-gray-100 px-6 py-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h1 class="text-xl font-semibold tracking-tight">Our Diary</h1>
+                    <span id="display-name" class="text-sm font-medium text-gray-500"></span>
+                </div>
+                
+                <div class="flex items-center justify-between bg-gray-50 rounded-2xl p-1 border border-gray-100">
+                    <div class="flex-1 flex flex-col items-center py-2 rounded-xl bg-white shadow-sm">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Dimitar</span>
+                        <span id="score-dimitar" class="text-lg font-semibold text-gray-800">0</span>
+                    </div>
+                    <div class="px-3 text-[10px] font-bold text-gray-300 uppercase tracking-widest">Points</div>
+                    <div class="flex-1 flex flex-col items-center py-2 rounded-xl bg-white shadow-sm">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Verce</span>
+                        <span id="score-Verce" class="text-lg font-semibold text-gray-800">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6 flex-1">
+                <div id="upload-section" class="mb-12 border-b border-gray-100 pb-12">
+                    <div id="form-container">
+                        <p class="text-sm text-gray-500 mb-8 leading-relaxed">Answer the prompts below. Every question you answer earns you a point.</p>
+                        
+                        <div id="dynamic-questions-container" class="space-y-8 mb-8"></div>
+
+                        <div class="p-5 bg-gray-50 rounded-2xl border border-gray-100 mt-8">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Ask a question for next week (Optional)</label>
+                            <input type="text" id="custom-question" placeholder="Type here..." class="w-full bg-white p-3 rounded-xl outline-none focus:ring-2 focus:ring-gray-200 text-sm border border-gray-200">
+                        </div>
+
+                        <button id="submit-btn" class="w-full bg-rose-600 text-white font-medium text-base py-4 rounded-xl shadow-md mt-8 active:bg-rose-700 transition-colors">
+                            Submit Answers
+                        </button>
+                        <p id="status-msg" class="text-sm font-medium text-center mt-4 hidden text-rose-600"></p>
+                    </div>
+                    
+                    <div id="locked-state" class="hidden text-center py-12 px-6">
+                        <div class="w-16 h-16 bg-green-50 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900">All set for this week</h3>
+                        <p class="text-sm text-gray-500 mt-2">You earned <span id="points-earned-msg" class="font-bold text-gray-900">0</span> points. See you next week.</p>
+                    </div>
+                </div>
+
+                <div id="view-section" class="pb-12">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-1">Time Capsule</h2>
+                    <p class="text-sm text-gray-500 mb-6">Review past months.</p>
+                    
+                    <div class="flex gap-2 mb-6">
+                        <select id="month-select" class="bg-gray-50 border border-gray-200 p-3 flex-1 rounded-xl outline-none focus:ring-2 focus:ring-gray-200 text-sm font-medium text-gray-700 appearance-none">
+                            <option value="0">January</option> <option value="1">February</option>
+                            <option value="2">March</option>   <option value="3">April</option>
+                            <option value="4">May</option>     <option value="5">June</option>
+                            <option value="6">July</option>    <option value="7">August</option>
+                            <option value="8">September</option><option value="9">October</option>
+                            <option value="10">November</option><option value="11">December</option>
+                        </select>
+                        <select id="year-select" class="bg-gray-50 border border-gray-200 p-3 w-28 rounded-xl outline-none focus:ring-2 focus:ring-gray-200 text-sm font-medium text-gray-700 appearance-none text-center">
+                            <option value="2026">2026</option> <option value="2027">2027</option>
+                        </select>
+                    </div>
+                    
+                    <button id="view-btn" class="w-full bg-gray-100 text-gray-800 font-medium py-3.5 rounded-xl active:bg-gray-200 transition-colors">
+                        View Entries
+                    </button>
+                    <div id="entries-container" class="mt-8 space-y-8"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>
