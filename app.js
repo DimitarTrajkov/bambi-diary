@@ -114,7 +114,7 @@ async function initializeAppState() {
 
         allEntries.forEach(entry => {
             if (entry.author === "Dimitar") dimitarScore += (entry.pointsEarned || 0);
-            if (entry.author === "verce") verceScore += (entry.pointsEarned || 0);
+            if (entry.author === "Verce") verceScore += (entry.pointsEarned || 0);
             
             if (entry.author === currentUser && entry.week === currentWeek && entry.year === new Date().getFullYear()) {
                 hasAnsweredThisWeek = true;
@@ -262,10 +262,10 @@ document.getElementById('view-btn').addEventListener('click', async () => {
     const isPastYear = selectedYear < currentYear;
     const isPastMonthSameYear = (selectedYear === currentYear && selectedMonth < currentMonth);
 
-    if (!isPastYear && !isPastMonthSameYear) {
-        entriesContainer.innerHTML = `<div class="bg-red-50 p-4 rounded-xl border border-red-200"><p class="text-red-500 font-bold text-center">Nice try! These secrets are locked until the month is over. 🔒</p></div>`;
-        return;
-    }
+    // if (!isPastYear && !isPastMonthSameYear) {
+    //     entriesContainer.innerHTML = `<div class="bg-red-50 p-4 rounded-xl border border-red-200"><p class="text-red-500 font-bold text-center">Nice try! These secrets are locked until the month is over. 🔒</p></div>`;
+    //     return;
+    // }
 
     entriesContainer.innerHTML = `<p class="text-center text-rose-400 font-medium animate-pulse">Dusting off the time capsule... ✨</p>`;
 
