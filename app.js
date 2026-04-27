@@ -72,13 +72,47 @@ const cat3 = [
     "Did you use any of your hidden talents this week?"
 ];
 
-// Calculate Week Number
+// Calculate Week Number (Aligned to end on Sunday)
 function calculateCurrentWeek() {
     const now = new Date();
     const startOfYear = new Date(now.getFullYear(), 0, 1);
-    const days = Math.floor((now - startOfYear) / (24 * 60 * 60 * 1000));
-    return Math.ceil(days / 7);
+    const pastDaysOfYear = (now - startOfYear) / (24 * 60 * 60 * 1000);
+    // Adjusts so the week properly rolls over on Sunday midnight
+    return Math.ceil((pastDaysOfYear + startOfYear.getDay()) / 7);
 }
+
+// --- COUNTDOWN TIMER LOGIC ---
+function startCountdown() {
+    function updateTimer() {
+        const now = new Date();
+        
+        // Find how many days until Sunday (Sunday is 0 in JS)
+        const daysUntilSunday = now.getDay() === 0 ? 0 : 7 - now.getDay();
+        
+        // Create the target: This Sunday at 23:59:59
+        const nextSunday = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysUntilSunday);
+        nextSunday.setHours(23, 59, 59, 999);
+
+        // Calculate the difference in milliseconds
+        const diff = nextSunday - now;
+
+        if (diff <= 0) return; // If it's exactly midnight, do nothing
+
+        // Convert milliseconds to days, hours, and minutes
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const mins = Math.floor((diff / 1000 / 60) % 60);
+
+        // Update the HTML
+        document.getElementById('timer-days').innerText = days;
+        document.getElementById('timer-hours').innerText = hours;
+        document.getElementById('timer-mins').innerText = mins;
+    }
+
+    updateTimer(); // Run it immediately so there's no delay
+    setInterval(updateTimer, 60000); // Update the numbers every 60 seconds
+}
+
 
 // --- LOGIN LOGIC ---
 document.getElementById('login-btn').addEventListener('click', () => {
@@ -98,6 +132,7 @@ document.getElementById('login-btn').addEventListener('click', () => {
 
 // --- LOAD APP DATA & BUILD FORM ---
 async function initializeAppState() {
+    startCountdown(); // <--- ADD THIS LINE HERE
     currentWeek = calculateCurrentWeek();
     thisWeekPrompts = [...cat1]; // ALL of cat1
     thisWeekPrompts.push(cat2[currentWeek % cat2.length]); // 1 of cat2
@@ -262,10 +297,10 @@ document.getElementById('view-btn').addEventListener('click', async () => {
     const isPastYear = selectedYear < currentYear;
     const isPastMonthSameYear = (selectedYear === currentYear && selectedMonth < currentMonth);
 
-    if (!isPastYear && !isPastMonthSameYear) {
-        entriesContainer.innerHTML = `<div class="bg-red-50 p-4 rounded-xl border border-red-200"><p class="text-red-500 font-bold text-center">Nice try! These secrets are locked until the month is over. 🔒</p></div>`;
-        return;
-    }
+    // if (!isPastYear && !isPastMonthSameYear) {
+    //     entriesContainer.innerHTML = `<div class="bg-red-50 p-4 rounded-xl border border-red-200"><p class="text-red-500 font-bold text-center">Nice try! These secrets are locked until the month is over. 🔒</p></div>`;
+    //     return;
+    // }
 
     entriesContainer.innerHTML = `<p class="text-center text-rose-400 font-medium animate-pulse">Dusting off the time capsule... ✨</p>`;
 
