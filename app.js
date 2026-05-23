@@ -74,25 +74,28 @@ const cat3 = [
 
 // Calculate Week Number (Aligned to end on Sunday)
 function calculateCurrentWeek() {
-    const now = new Date();
-    const startOfYear = new Date(now.getFullYear(), 0, 1);
-    const pastDaysOfYear = (now - startOfYear) / (24 * 60 * 60 * 1000);
-    // Adjusts so the week properly rolls over on Sunday midnight
-    return Math.ceil((pastDaysOfYear + startOfYear.getDay()) / 7);
+    const d = new Date();
+    // Treat Sunday as day 7 instead of 0
+    const dayNum = d.getDay() || 7; 
+    // Shift date to the nearest Thursday for standard week calculation
+    d.setDate(d.getDate() + 4 - dayNum); 
+    const yearStart = new Date(d.getFullYear(), 0, 1);
+    // Calculate full weeks between the start of the year and the adjusted date
+    return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
 }
 
 // --- COUNTDOWN TIMER LOGIC ---
 function startCountdown() {
     function updateTimer() {
         const now = new Date();
-        
         // Find how many days until Sunday (Sunday is 0 in JS)
         const daysUntilSunday = now.getDay() === 0 ? 0 : 7 - now.getDay();
         
         // Create the target: This Sunday at 23:59:59
         const nextSunday = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysUntilSunday);
         nextSunday.setHours(23, 59, 59, 999);
-
+        // console.log("date now vs left", now, nextSunday)
+        
         // Calculate the difference in milliseconds
         const diff = nextSunday - now;
 
@@ -153,6 +156,7 @@ async function initializeAppState() {
             
             if (entry.author === currentUser && entry.week === currentWeek && entry.year === new Date().getFullYear()) {
                 hasAnsweredThisWeek = true;
+                console.log("i answered this week?", entry.week, currentWeek, entry.year, new Date().getFullYear())
             }
         });
 
@@ -273,6 +277,7 @@ document.getElementById('submit-btn').addEventListener('click', async () => {
         document.getElementById('form-container').classList.add('hidden');
         document.getElementById('locked-state').classList.remove('hidden');
         document.getElementById('points-earned-msg').innerText = points;
+        console.log("print the points", points)
         
         const scoreEl = document.getElementById(`score-${currentUser.toLowerCase()}`);
         scoreEl.innerText = parseInt(scoreEl.innerText) + points;
@@ -297,10 +302,10 @@ document.getElementById('view-btn').addEventListener('click', async () => {
     const isPastYear = selectedYear < currentYear;
     const isPastMonthSameYear = (selectedYear === currentYear && selectedMonth < currentMonth);
 
-    // if (!isPastYear && !isPastMonthSameYear) {
-    //     entriesContainer.innerHTML = `<div class="bg-red-50 p-4 rounded-xl border border-red-200"><p class="text-red-500 font-bold text-center">Nice try! These secrets are locked until the month is over. 🔒</p></div>`;
-    //     return;
-    // }
+    if (!isPastYear && !isPastMonthSameYear) {
+         entriesContainer.innerHTML = `<div class="bg-red-50 p-4 rounded-xl border border-red-200"><p class="text-red-500 font-bold text-center">Nice try! These secrets are locked until the month is over. 🔒</p></div>`;
+         return;
+     }
 
     entriesContainer.innerHTML = `<p class="text-center text-rose-400 font-medium animate-pulse">Dusting off the time capsule... ✨</p>`;
 
